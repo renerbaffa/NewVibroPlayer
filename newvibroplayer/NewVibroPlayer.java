@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 
-package newvibroplayer;
-
 import java.io.File;
 
 /**

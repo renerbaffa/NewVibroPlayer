@@ -1,4 +1,3 @@
-package newvibroplayer;
 
 import com.synthbot.jasiohost.AsioChannel;
 import com.synthbot.jasiohost.AsioDriver;
