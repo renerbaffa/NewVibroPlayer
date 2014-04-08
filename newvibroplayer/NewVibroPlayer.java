@@ -19,6 +19,9 @@ public class NewVibroPlayer {
         // TODO code application logic here
         
         try {
+            Interface mainScreen = new Interface();
+            mainScreen.setVisible(true);
+            
             //File file = new File ( "C:\\Users\\imdc\\Desktop\\sample_file.wav" );
             File file = new File ( "C:\\Users\\imdc\\Desktop\\test.wav" );
 

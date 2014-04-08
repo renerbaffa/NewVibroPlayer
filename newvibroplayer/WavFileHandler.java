@@ -252,11 +252,11 @@ public class WavFileHandler {
                 
                 samples.add ( sample );
                 
-                System.out.println ( Math.round ( dataBytes * 100 / chunkSize ) );
+                /*System.out.println ( Math.round ( dataBytes * 100 / chunkSize ) );
                 
                 if ( Math.round ( dataBytes * 100 / chunkSize ) == 99 ) {
                     System.out.println ( Math.round ( dataBytes * 100 / chunkSize ) );
-                }
+                }*/
             }
         }
         catch ( IOException ex ) {
