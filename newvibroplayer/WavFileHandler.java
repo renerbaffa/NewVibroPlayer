@@ -224,6 +224,10 @@ public class WavFileHandler {
         return this.frameSize;
     }
     
+    public int getNumChannels() {
+        return this.numChannels;
+    }
+    
     public ArrayList<byte[]> getSamples() {
         return this.samples;
     }
