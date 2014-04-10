@@ -3,7 +3,6 @@ import com.synthbot.jasiohost.AsioChannel;
 import com.synthbot.jasiohost.AsioDriver;
 import com.synthbot.jasiohost.AsioDriverListener;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
