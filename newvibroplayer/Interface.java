@@ -1,11 +1,19 @@
 
+import com.synthbot.jasiohost.AsioDriver;
+import com.synthbot.jasiohost.AsioDriverState;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,6 +27,14 @@ import javax.swing.JOptionPane;
  */
 public class Interface extends javax.swing.JFrame {
 
+    AsioDriver driver;
+    AsioSoundHost listener;
+    
+    WavFileHandler file;
+    
+    public static JDialog dialog;
+    public static JProgressBar progressBar;
+    
     private ArrayList<WavFileHandler> files;
     private int channels;
     
@@ -54,6 +70,9 @@ public class Interface extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        filesPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        uploadFile = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -115,6 +134,33 @@ public class Interface extends javax.swing.JFrame {
         jLabel11.setText("of the chair");
 
         jButton1.setText("Play Sound");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        filesPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout filesPanelLayout = new javax.swing.GroupLayout(filesPanel);
+        filesPanel.setLayout(filesPanelLayout);
+        filesPanelLayout.setHorizontalGroup(
+            filesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 606, Short.MAX_VALUE)
+        );
+        filesPanelLayout.setVerticalGroup(
+            filesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 318, Short.MAX_VALUE)
+        );
+
+        jLabel2.setText("Upload a WAVE file:");
+
+        uploadFile.setEditable(false);
+        uploadFile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                uploadFileMouseClicked(evt);
+            }
+        });
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -164,38 +210,48 @@ public class Interface extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jSeparator1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel11))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel10)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel3)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel4)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel5)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel6)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel7)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel8)
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel9))))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(322, 322, 322)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(filesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jSeparator1)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jLabel11))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel2)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(uploadFile))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel10)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel3)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel4)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel5)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel6)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel7)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel8)
+                                            .addGap(27, 27, 27)
+                                            .addComponent(jLabel9))))))))
                 .addContainerGap(66, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(418, Short.MAX_VALUE)
+                .addGap(40, 40, 40)
+                .addComponent(filesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,12 +270,17 @@ public class Interface extends javax.swing.JFrame {
                             .addComponent(jLabel8)
                             .addComponent(jLabel9)
                             .addComponent(jLabel10))
-                        .addGap(68, 68, 68)
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(uploadFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(11, 11, 11)
                         .addComponent(jButton1)
                         .addGap(91, 91, 91))))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void newWaveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newWaveFileActionPerformed
@@ -237,7 +298,6 @@ public class Interface extends javax.swing.JFrame {
                 
                 /* check if the file can be uploaded because of the number of channels (max = 8) */
                 channels += file.getNumChannels();
-                files.add ( file );
             } catch (IOException ex) {
                 System.out.println ( ex );
             } catch (UnsupportedAudioFileException ex) {
@@ -263,12 +323,91 @@ public class Interface extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        listener.restart();
+        driver.returnToState ( AsioDriverState.INITIALIZED );
+        listener = new AsioSoundHost ( driver );
+        driver.start();
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void uploadFileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_uploadFileMouseClicked
+        
+        JFileChooser fc = new JFileChooser();
+        fc.setFileFilter ( new SoundsFilter() );
+        
+        int returnedValue = fc.showDialog(rootPane, null);
+
+        if (returnedValue == JFileChooser.APPROVE_OPTION) {
+            try {
+                /* Create the file with chosen path */
+                String path = fc.getSelectedFile().getPath();
+                File f = new File ( path );
+                file = new WavFileHandler ( f );
+                
+                JTextArea msgLabel;
+                final int MAX = 100;
+                JPanel panel;
+
+                progressBar = new JProgressBar ( 0, MAX );
+                progressBar.setIndeterminate ( false );
+                progressBar.setStringPainted ( true );
+                msgLabel = new JTextArea ( "Loading " + f.getName() );
+                msgLabel.setEditable ( false );
+
+                panel = new JPanel ( new BorderLayout ( 5, 5 ) );
+                panel.add ( msgLabel, BorderLayout.PAGE_START );
+                panel.add ( progressBar, BorderLayout.CENTER );
+                panel.setBorder ( BorderFactory.createEmptyBorder ( 11, 11, 11, 11 ) );
+
+                dialog = new JDialog ( Frame.getFrames()[0], "Loading...", true );
+                dialog.getContentPane().add ( panel );
+                dialog.setResizable ( false );
+                dialog.pack();
+                dialog.setSize ( 500, dialog.getHeight() );
+                dialog.setLocationRelativeTo ( null );
+                dialog.setAlwaysOnTop ( true );
+                msgLabel.setBackground ( panel.getBackground() );
+                
+                
+                
+                /* To load a dialog progressBar */
+                Thread t1 = new Thread() {
+
+                    @Override
+                    public void run() {
+                        file.read();
+                        
+                        dialog.dispose();
+                    }
+                    
+                };
+
+                t1.start();
+                
+                dialog.setVisible ( true );
+            } catch (IOException ex) {
+                System.out.println ( ex );
+            } catch (UnsupportedAudioFileException ex) {
+               System.out.println ( ex );
+            }
+        }
+        
+        if ( channels == 8 ) {
+            newWaveFile.setEnabled ( false );
+        }
+        
+    }//GEN-LAST:event_uploadFileMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel filesPanel;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -284,5 +423,6 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuItem newWaveFile;
+    private javax.swing.JTextField uploadFile;
     // End of variables declaration//GEN-END:variables
 }
