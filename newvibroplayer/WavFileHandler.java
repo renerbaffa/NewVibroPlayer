@@ -254,13 +254,12 @@ public class WavFileHandler {
             for ( ; dataBytes < chunkSize; dataBytes++ ) {
                 /* group the samples in frames */
                 for ( int i = 0; i < frameSize; i++, dataBytes++ ) {
-                    sample[i] = (byte) inputStream.read();;
+                    sample[i] = (byte) inputStream.read();
                 }
                 
                 samples.add ( sample );
                 
                 //System.out.println ( Interface.progressBar.getValue() + " | " + Math.round ( dataBytes * 100 / chunkSize ) );
-                
                 
                 String res = "" +  ( ( dataBytes / 100 ) * 100 / ( chunkSize / 100 ) );
                 double r = new Double ( res );
