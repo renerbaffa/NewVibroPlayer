@@ -265,7 +265,7 @@ public class WavFileHandler {
                 String res = "" +  ( ( dataBytes / 100 ) * 100 / ( chunkSize / 100 ) );
                 double r = new Double ( res );
                 
-                System.out.println ( res );
+                //System.out.println ( res );
                 
                 //Interface.progressBar.setValue ( Math.round ( dataBytes * 100 / chunkSize ) );
                 Interface.progressBar.setValue ( (int) r );
