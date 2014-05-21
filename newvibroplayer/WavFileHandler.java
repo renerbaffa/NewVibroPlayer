@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -238,6 +239,8 @@ public class WavFileHandler {
             int frameSize = this.getFrameSize();
             byte[] sample = new byte[frameSize];
             
+            //System.out.println ( "AAAAAAAA| " + Interface.progressBar.getValue() );
+            
             FileInputStream inputStream = new FileInputStream ( this.file );
             
             /* Throw away header bytes */
@@ -256,9 +259,20 @@ public class WavFileHandler {
                 
                 samples.add ( sample );
                 
-                /*System.out.println ( Math.round ( dataBytes * 100 / chunkSize ) );
+                //System.out.println ( Interface.progressBar.getValue() + " | " + Math.round ( dataBytes * 100 / chunkSize ) );
                 
-                if ( Math.round ( dataBytes * 100 / chunkSize ) == 99 ) {
+                
+                String res = "" +  ( ( dataBytes / 100 ) * 100 / ( chunkSize / 100 ) );
+                double r = new Double ( res );
+                
+                System.out.println ( res );
+                
+                //Interface.progressBar.setValue ( Math.round ( dataBytes * 100 / chunkSize ) );
+                Interface.progressBar.setValue ( (int) r );
+                
+                //System.out.println ( Interface.progressBar.getValue() + " | " + dataBytes + " * 100 / " + chunkSize + " = " + Math.round ( dataBytes * 100 / chunkSize ) );
+                
+                /*if ( Math.round ( dataBytes * 100 / chunkSize ) == 99 ) {
                     System.out.println ( Math.round ( dataBytes * 100 / chunkSize ) );
                 }*/
             }
