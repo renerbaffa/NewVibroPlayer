@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import java.io.File;
+import com.synthbot.jasiohost.AsioDriver;
 
 /**
  *
@@ -12,6 +12,9 @@ import java.io.File;
  */
 public class NewVibroPlayer {
 
+    AsioDriver driver;
+    AsioSoundHost listener;
+    
     /**
      * @param args the command line arguments
      */
@@ -20,14 +23,18 @@ public class NewVibroPlayer {
         
         try {
             Interface mainScreen = new Interface();
-            mainScreen.setVisible(true);
+            mainScreen.setVisible ( true );
             
-            //File file = new File ( "C:\\Users\\imdc\\Desktop\\sample_file.wav" );
-            File file = new File ( "C:\\Users\\imdc\\Desktop\\test.wav" );
+            /*Server server = new Server ( 7400 );
+            
+            /* can we do that in a thread? 
+            server.start();*/
+            
+            //File file = new File ( "C:\\Users\\imdc\\Desktop\\test.wav" );
 
-            WavFileHandler wavFile = new WavFileHandler ( file );
+            //WavFileHandler wavFile = new WavFileHandler ( file );
             
-            wavFile.read();
+            //wavFile.read();
         }
         catch ( Exception ex ) {
             System.out.println ( ex );
