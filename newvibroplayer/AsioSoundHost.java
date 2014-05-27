@@ -2,7 +2,9 @@
 import com.synthbot.jasiohost.AsioChannel;
 import com.synthbot.jasiohost.AsioDriver;
 import com.synthbot.jasiohost.AsioDriverListener;
+import com.synthbot.jasiohost.AsioSampleType;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,7 +66,7 @@ public class AsioSoundHost implements AsioDriverListener {
           
             /* Initializing the variable that contains the sound information o be played */
                 output = new float[bufferSize];
-                out = new float[9][bufferSize];
+                out = new float[8][bufferSize];
             
             /* Add all the 7 channels of the chair to a list and then to the driver */
                 activeChannels = new HashSet<>();
@@ -76,7 +78,7 @@ public class AsioSoundHost implements AsioDriverListener {
             /* Create a list with all active channels */
                 channel = new boolean[8];
                 for ( int i = 0; i < channel.length; i++ ) {
-                    channel[i] = false;
+                    channel[i] = true;
                 }
         }
     }
@@ -109,30 +111,28 @@ public class AsioSoundHost implements AsioDriverListener {
         /* Get the elapsed time (difference between the current time and the start time and convert it to seconds. */
             long elapsedTime = ((sampleTime - startTime) / 1000000);
         
+            
+            /*for ( int i = 0; i < bufferSize; i++, currentCounter++ ) {
+                out[j] = m.getFloat ( currentCounter );
+            }*/
+            
         /* Load the samples to play */
-            for ( int j = 1; j < 9; j++ ) {
-                /*Music m = Player.musics.get ( j );
-                
-                if ( m != null ) {
-                    for ( int i = 0; i < bufferSize; i++, currentCounter++ ) {
-                        out[j][i] = m.getFloat ( currentCounter );
-                    }
-                }*/
+            for ( int i = 0; i < bufferSize; currentCounter++, i++ ) {
+                for ( int j = 0; j < Interface.file.getNumChannels(); j++ ) {
+                    out[j][i] = Interface.file.getSampleFromChannel ( j, currentCounter );
+                }
             }
             
-            /*for( int i = 0; i < output.length; i++, currentCounter++) {
-                output[i] = Player.musics.get ( 0 ).getFloat ( currentCounter );
-                //System.out.println ( currentCounter );
-            }*/
-
-        /* Runs all the channel in the active list */
             for ( AsioChannel channelInfo : activeChannels ) {
                 /* Check if the current channel is active */
                 if ( channel[channelInfo.getChannelIndex()] ) {
                     /* play the information in the current channel */
-                    channelInfo.write ( out[channelInfo.getChannelIndex() + 1] );
+                    channelInfo.write ( out[channelInfo.getChannelIndex()] );
                 }
             }
+        
+        /* Runs all the channel in the active list */
+            
     }
     
     @Override

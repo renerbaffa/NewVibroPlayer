@@ -30,7 +30,7 @@ public class Interface extends javax.swing.JFrame {
     AsioDriver driver;
     AsioSoundHost listener;
     
-    WavFileHandler file;
+    public static WavFileHandler file;
     
     public static JDialog dialog;
     public static JProgressBar progressBar;
@@ -45,6 +45,8 @@ public class Interface extends javax.swing.JFrame {
     public Interface() {
         channels = 0;
         files = new ArrayList<>();
+        
+        driver = AsioDriver.getDriver ( "ASIO PreSonus FireStudio" );
         
         initComponents();
     }
@@ -325,10 +327,16 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        listener.restart();
-        driver.returnToState ( AsioDriverState.INITIALIZED );
-        listener = new AsioSoundHost ( driver );
-        driver.start();
+        if ( driver.getCurrentState() != AsioDriverState.RUNNING ) {
+            listener = new AsioSoundHost ( driver );
+            driver.start();
+        }
+        else {
+            listener.restart();
+            driver.returnToState ( AsioDriverState.INITIALIZED );
+            listener = new AsioSoundHost ( driver );
+            driver.start();
+        }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 

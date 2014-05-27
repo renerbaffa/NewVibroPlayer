@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -34,6 +33,26 @@ public class WavFileHandler {
         private ArrayList<Byte> options;
         private String subChunk2ID;
         private int subchunk2Size;
+        
+        private ArrayList<Float>[] channels;
+        
+        private ArrayList<Integer> channel0;
+        private ArrayList<Integer> channel1;
+        private ArrayList<Integer> channel2;
+        private ArrayList<Integer> channel3;
+        private ArrayList<Integer> channel4;
+        private ArrayList<Integer> channel5;
+        private ArrayList<Integer> channel6;
+        private ArrayList<Integer> channel7;
+        
+        private ArrayList<Byte> aux0;
+        private ArrayList<Byte> aux1;
+        private ArrayList<Byte> aux2;
+        private ArrayList<Byte> aux3;
+        private ArrayList<Byte> aux4;
+        private ArrayList<Byte> aux5;
+        private ArrayList<Byte> aux6;
+        private ArrayList<Byte> aux7;
         
         int aux;
     /* bytes of the header (header size) */
@@ -69,9 +88,33 @@ public class WavFileHandler {
         
         this.samples = new ArrayList<>();
         
+        this.channel0 = new ArrayList<>();
+        this.channel1 = new ArrayList<>();
+        this.channel2 = new ArrayList<>();
+        this.channel3 = new ArrayList<>();
+        this.channel4 = new ArrayList<>();
+        this.channel5 = new ArrayList<>();
+        this.channel6 = new ArrayList<>();
+        this.channel7 = new ArrayList<>();
+        
+        this.aux0 = new ArrayList<>();
+        this.aux1 = new ArrayList<>();
+        this.aux2 = new ArrayList<>();
+        this.aux3 = new ArrayList<>();
+        this.aux4 = new ArrayList<>();
+        this.aux5 = new ArrayList<>();
+        this.aux6 = new ArrayList<>();
+        this.aux7 = new ArrayList<>();
+        
         if ( !getAudioFormat() ) {
             /* Is it possible to get where is the error?! */
             throw new IOException ( "File format is invalid." );
+        }
+        
+        this.channels = (ArrayList<Float>[]) new ArrayList[this.numChannels];
+        
+        for ( int i = 0; i < this.channels.length; i++ ) {
+            this.channels[i] = new ArrayList<>();
         }
     }
     
@@ -237,29 +280,249 @@ public class WavFileHandler {
         try {
             //byte[] sample = new byte[audioFormat.getFrameSize()];
             int frameSize = this.getFrameSize();
-            byte[] sample = new byte[frameSize];
             
             //System.out.println ( "AAAAAAAA| " + Interface.progressBar.getValue() );
             
             FileInputStream inputStream = new FileInputStream ( this.file );
             
             /* Throw away header bytes */
+                byte[] sample = new byte[frameSize];
                 for ( int i = 0; i < headerSize; i++ ) {
                     sample[0] = (byte) inputStream.read();
                 }
             
             int dataBytes = headerSize;
             
+            int channelBytesPerSample = this.frameSize / this.numChannels;
+            
             /* get all the samples of the file */
             for ( ; dataBytes < chunkSize; dataBytes++ ) {
                 /* group the samples in frames */
+                byte[] sample2 = new byte[frameSize];
                 for ( int i = 0; i < frameSize; i++, dataBytes++ ) {
-                    sample[i] = (byte) inputStream.read();
+                    sample2[i] = (byte) inputStream.read();
                 }
                 
-                samples.add ( sample );
+                byte[][] channel = new byte[this.numChannels][channelBytesPerSample];
                 
-                //System.out.println ( Interface.progressBar.getValue() + " | " + Math.round ( dataBytes * 100 / chunkSize ) );
+                for ( int counter = 0; counter < channelBytesPerSample; counter++ ) {
+                    int aux = counter;
+                    for ( int k = 0; k < this.numChannels; k++ ) {
+                             if ( k == 0 ) { aux0.add ( sample2[aux] ); }
+                        else if ( k == 1 ) { aux1.add ( sample2[aux] ); }
+                        else if ( k == 2 ) { aux2.add ( sample2[aux] ); }
+                        else if ( k == 3 ) { aux3.add ( sample2[aux] ); }
+                        else if ( k == 4 ) { aux4.add ( sample2[aux] ); }
+                        else if ( k == 5 ) { aux5.add ( sample2[aux] ); }
+                        else if ( k == 6 ) { aux6.add ( sample2[aux] ); }
+                        else if ( k == 7 ) { aux7.add ( sample2[aux] ); }
+                        
+                        aux += channelBytesPerSample;
+                    }
+                }
+                
+                for ( int i = 0; i < this.numChannels; i++ ) {
+                    if ( i == 0 ) {
+                        byte[] toConvert = new byte[aux0.size()];
+                        
+                        for ( int count = 0; count < aux0.size(); count++ ) {
+                            toConvert[count] = aux0.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel0.add ( converted );
+                        
+                        aux0.clear();
+                    }
+                    else if ( i == 1 ) {
+                        byte[] toConvert = new byte[aux1.size()];
+                        
+                        for ( int count = 0; count < aux1.size(); count++ ) {
+                            toConvert[count] = aux1.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel1.add ( converted );
+                        
+                        aux1.clear();
+                    }
+                    else if ( i == 2 ) {
+                        byte[] toConvert = new byte[aux2.size()];
+                        
+                        for ( int count = 0; count < aux2.size(); count++ ) {
+                            toConvert[count] = aux2.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel2.add ( converted );
+                        
+                        aux2.clear();
+                    }
+                    else if ( i == 3 ) {
+                        byte[] toConvert = new byte[aux3.size()];
+                        
+                        for ( int count = 0; count < aux3.size(); count++ ) {
+                            toConvert[count] = aux3.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel3.add ( converted );
+                        
+                        aux3.clear();
+                    }
+                    else if ( i == 4 ) {
+                        byte[] toConvert = new byte[aux4.size()];
+                        
+                        for ( int count = 0; count < aux4.size(); count++ ) {
+                            toConvert[count] = aux4.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel4.add ( converted );
+                        
+                        aux4.clear();
+                    }
+                    else if ( i == 5 ) {
+                        byte[] toConvert = new byte[aux5.size()];
+                        
+                        for ( int count = 0; count < aux5.size(); count++ ) {
+                            toConvert[count] = aux5.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel5.add ( converted );
+                        
+                        aux5.clear();
+                    }
+                    else if ( i == 6 ) {
+                        byte[] toConvert = new byte[aux6.size()];
+                        
+                        for ( int count = 0; count < aux6.size(); count++ ) {
+                            toConvert[count] = aux6.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel6.add ( converted );
+                        
+                        aux6.clear();
+                    }
+                    else if ( i == 7 ) {
+                        byte[] toConvert = new byte[aux7.size()];
+                        
+                        for ( int count = 0; count < aux7.size(); count++ ) {
+                            toConvert[count] = aux7.get ( count );
+                        }
+                        
+                        int converted = 0;
+                        
+                        if ( toConvert.length == 2 ) {
+                            converted = ( (toConvert[0] & 0xF) << 8 ) | ( (toConvert[1] & 0xFF) );
+                        }
+                        else if ( toConvert.length == 3 ) {
+                            converted = ( (toConvert[0] & 0xF) << 16 ) | ( (toConvert[1] & 0xFF) << 8 ) | ( (toConvert[2] & 0xFF) << 16 );
+                        }
+                        else if ( toConvert.length > 3 ) {
+                            ByteBuffer buffer = ByteBuffer.wrap ( toConvert );
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            converted = buffer.getInt();
+                        }
+                        
+                        channel7.add ( converted );
+                        
+                        aux7.clear();
+                    }
+                }
                 
                 String res = "" +  ( ( dataBytes / 100 ) * 100 / ( chunkSize / 100 ) );
                 double r = new Double ( res );
@@ -279,5 +542,16 @@ public class WavFileHandler {
         catch ( IOException ex ) {
             System.out.println ( ex );
         }
+    }
+    
+    public int getSampleFromChannel ( int channel, int samplePosition ) {
+             if ( channel == 0 ) { return channel0.get ( samplePosition ); }
+        else if ( channel == 1 ) { return channel1.get ( samplePosition ); }
+        else if ( channel == 2 ) { return channel2.get ( samplePosition ); }
+        else if ( channel == 3 ) { return channel3.get ( samplePosition ); }
+        else if ( channel == 4 ) { return channel4.get ( samplePosition ); }
+        else if ( channel == 5 ) { return channel5.get ( samplePosition ); }
+        else if ( channel == 6 ) { return channel6.get ( samplePosition ); }
+        else { return channel7.get ( samplePosition ); }
     }
 }
