@@ -109,24 +109,25 @@ public class AsioSoundHost implements AsioDriverListener {
     public void bufferSwitch(long sampleTime, long samplePosition, Set<AsioChannel> activeChannels) {
 
         /* Get the elapsed time (difference between the current time and the start time and convert it to seconds. */
-            long elapsedTime = ((sampleTime - startTime) / 1000000);
+            //long elapsedTime = ((sampleTime - startTime) / 1000000);
         
             
             /*for ( int i = 0; i < bufferSize; i++, currentCounter++ ) {
                 out[j] = m.getFloat ( currentCounter );
             }*/
             
-        /* Load the samples to play */
+        /* Load the samples to play 
             for ( int i = 0; i < bufferSize; currentCounter++, i++ ) {
                 for ( int j = 0; j < Interface.file.getNumChannels(); j++ ) {
-                    out[j][i] = Interface.file.getSampleFromChannel ( j, currentCounter );
+                    int bla = Interface.file.getSampleFromChannel ( j, currentCounter );
+                    out[j][i] = (float) bla;
                 }
             }
             
             for ( AsioChannel channelInfo : activeChannels ) {
-                /* Check if the current channel is active */
+                /* Check if the current channel is active 
                 if ( channel[channelInfo.getChannelIndex()] ) {
-                    /* play the information in the current channel */
+                    /* play the information in the current channel 
                     channelInfo.write ( out[channelInfo.getChannelIndex()] );
                 }
             }
